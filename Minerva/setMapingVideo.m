@@ -37,5 +37,12 @@ function setMapingVideo(h)
 %     h.d.RSlider.Limits(1) = log(im2double(min(h.d.SR(:))))*100;
 %     h.d.RSlider.Limits(2) = log(im2double(max(h.d.SR(:))))*100;
 %     h.d.RSlider.Value     = h.d.RSlider.Limits(2);
+
+    h.d.LSlider.Limits(1) = 50;
+    h.d.LSlider.Limits(2) = 100;
+    h.d.LSlider.Value     = 100;
+    h.d.RSlider.Limits(1) = 50;
+    h.d.RSlider.Limits(2) = 100;
+    h.d.RSlider.Value     = 100;
     setMinI(h);
 end
