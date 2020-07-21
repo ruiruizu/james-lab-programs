@@ -21,12 +21,10 @@ function applyRegUI(h)
     videoFolderNameP = uipanel(h.d.g);
     videoFolderNameG = uigridlayout(videoFolderNameP);
     videoFolderNameG.RowHeight = {'1x'};
-    videoFolderNameG.ColumnWidth = {90,'1x',90,40,90,90,90};
+    videoFolderNameG.ColumnWidth = {90,'1x',90,90,40};
     
     uibutton(videoFolderNameG,'Text','Import Videos','ButtonPushedFcn',@(~,~) setVideosToMap(h));
     h.d.videoFolderNameLabel = uilabel(videoFolderNameG,'Text','');
-    h.d.movingMean.checkbox = uicheckbox(videoFolderNameG,'Text','Moving mean');
-    h.d.movingMean.editfield = uieditfield(videoFolderNameG,'numeric');
     uibutton(videoFolderNameG,'Text','Clear Videos','ButtonPushedFcn',@(~,~) clearVideosToMap(h));
     uibutton(videoFolderNameG,'Text','Overlay Videos','ButtonPushedFcn',@(~,~) overlayVideos(h));
     uibutton(videoFolderNameG,'Text','Exit','ButtonPushedFcn',@(~,~) Minerva(h));

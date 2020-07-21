@@ -65,26 +65,37 @@ function overlayVideos(h)
         end
                 
         % Write first frame
-        A = zeros(fileInfo(1).Height,fileInfo(1).Width,1,'uint16');
+        S = zeros(fileInfo(1).Height,fileInfo(1).Width,1,'uint16');
         if ~isfolder(path)
             tiffLink = Tiff(filePath, 'r');
+                tiffLink.setDirectory(1);
+                S(:,:,j) = tiffLink.read();
+            end
         else
-            tiffLink = Tiff([path '/' newfiles{1}], 'r');
+            for j = 1:meanWidth
+                tiffLink = Tiff([path '/' newfiles{j}], 'r');
+                tiffLink.setDirectory(1);
+                S(:,:,j) = tiffLink.read();
+            end
         end
-        tiffLink.setDirectory(1);
-        A(:,:,1) = tiffLink.read();
         
+        A = cast(mean(S,3),'uint16');
         O = getOverlay(A(:,1:256),A(:,257:512),h,outputview);
         imwrite(O,[savePath,saveName],'tif','Compression','none');
         
+        
         % Later frames
-        for f = 2:dur
+        for f = 2:dur-meanWidth+1
+            % Shift up a frame
+            if meanWidth > 1
+                S(:,:,1:end-1) = S(:,:,2:end);
+            end
             % Get new frame
             if ~isfolder(path)
-                tiffLink.setDirectory(f);
+                tiffLink.setDirectory(f+meanWidth-1);
             else
                 try
-                    tiffLink = Tiff([path '/' newfiles{f}], 'r');
+                    tiffLink = Tiff([path '/' newfiles{f+meanWidth-1}], 'r');
                 catch ME
                     if strcmp(ME.identifier, 'MATLAB:imagesci:Tiff:unableToOpenFile')
                         continue;
@@ -92,8 +103,9 @@ function overlayVideos(h)
                 end
                 tiffLink.setDirectory(1);
             end
-            A(:,:,end) = tiffLink.read();
+            S(:,:,end) = tiffLink.read();
         
+            A = cast(mean(S,3),'uint16');
             O = getOverlay(A(:,1:256),A(:,257:512),h,outputview);
             
             hWB.Value = f/dur;
@@ -101,8 +113,13 @@ function overlayVideos(h)
             % For big files
             if f==5001 || f==10001 || f==15001 || f==20001
                 oldSaveName = saveName;
-                newSaveName = ['overlay_' num2str(f-5000) '-' num2str(f-1) '.tif'];
-                saveName = ['overlay_' num2str(f) '- .tif'];
+                if applyMean
+                    newSaveName = ['overlay_mean-' num2str(meanWidth) '_' num2str(f-5000) '-' num2str(f-1) '.tif'];
+                    saveName = ['overlay_mean-' num2str(meanWidth) '_' num2str(f) '-.tif'];
+                else
+                    newSaveName = ['overlay_' num2str(f-5000) '-' num2str(f-1) '.tif'];
+                    saveName = ['overlay_' num2str(f) '- .tif'];
+                end
                 movefile([savePath,oldSaveName],[savePath,newSaveName]);
                 
                 imwrite(O,[savePath,saveName],'tif','Compression','none');
