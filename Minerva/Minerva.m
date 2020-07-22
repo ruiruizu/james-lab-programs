@@ -18,6 +18,7 @@ function h = Minerva(h)
                 % save video
     
     if ~exist('h','var')
+        addpath('../Irma/')
         h = session;
         h.d.f = uifigure;
         h.d.g = uigridlayout(h.d.f);
