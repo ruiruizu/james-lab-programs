@@ -35,24 +35,25 @@ classdef ExportTiff < handle
 %%% exportStream.add(I2);
 %%% exportStream.close;
 %%%
-%%% Listeners for progress bars can be used in streaming mode on the 'lastFrame' property.
+%%% Listeners for progress bars can be used in streaming mode on the 'progress' property.
 %%% Example:
 %%% exportStream = ExportTiff.start(Filepath, Height, Width, Channels, Frames, (Overwrite=false) );
 %%% waitBar = uiprogressdlg(f);
-%%% updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.lastFrame);
-%%% addlistener(exportStream,'lastFrame','PostSet',updateWait);
+%%% updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.progress);
+%%% addlistener(exportStream,'progress','PostSet',updateWait);
 %%% exportStream.add(S);
 %%% exportStream.close;
 %%%
 
     properties (SetObservable) 
-        lastFrame = 0
+        progress = 0 % value between 0-1, percentage of frames written
     end
 
     properties (Access = private)
+        lastFrame = 0
+        frames
         tiffStream
         tags = struct
-        listenerObj
     end
     
     methods(Static)
@@ -148,6 +149,7 @@ classdef ExportTiff < handle
                     setTag(obj.tiffStream, obj.tags);
                     write(obj.tiffStream, S(:,:,c,f));
                     obj.lastFrame = obj.lastFrame + 1;
+                    obj.progress = obj.lastFrame/obj.frames;
                 end
             end
         end

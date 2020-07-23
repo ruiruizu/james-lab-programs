@@ -1,8 +1,41 @@
-classdef ImportTiff
+classdef ImportTiff < handle
+%%% ImportTiff
+%%%
+%%% Imports stacks, including in ImageJ hyperstack format with multiple 
+%%% color channels and frames. Stacks/Images have the
+%%% dimensions of (x, y, channels, frames).
+%%%
+%%% Start:
+%%% importStream = ImportTiff(Filepath)
+%%% OR
+%%% importStream = ImportTiff.start(Filepath)
+%%%
+%%% Retreive image or stack:
+%%% S = importStream.getStack;
+%%% I = importStream.nextFrame;
+%%% I = importStream.getFrame(frameNumber);
+%%%
+%%% Close:
+%%% importStream.close;
+%%%
+%%% Listeners for progress bars can be used on the 'progress' property.
+%%% Example:
+%%% importStream = ImportTiff.start(Filepath);
+%%% waitBar = uiprogressdlg(f);
+%%% updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.progress);
+%%% addlistener(importStream,'progress','PostSet',updateWait);
+%%% S = importStream.getStack;
+%%% importStream.close;
+%%%
+    
     properties (Access = private)
         lastFrame = 0 % accounts for channels
         lastImage = 0 % does not account for channels
         tiffStream
+    end
+    
+    properties (SetObservable)
+        progress = 0 % value between 0-1, percentage of frames read in
     end
     
     properties (Access = public)
@@ -21,11 +54,12 @@ classdef ImportTiff
     
     methods
         function obj = ImportTiff(filepath)
+            warning('off','imageio:tiffmexutils:libtiffWarning');
             obj.images = size(imfinfo(filepath),1);
             obj.tiffStream = Tiff(filepath,'r');
             
             obj.height = obj.tiffStream.getTag('ImageLength');
-            obj.width = obj.tiffStream.getTag('ImageLength');
+            obj.width = obj.tiffStream.getTag('ImageWidth');
             
             % Set Channel
             obj.channels = 1; % first set to default value
@@ -46,6 +80,7 @@ classdef ImportTiff
         
         function S = getFrame(obj,f)
             obj.lastFrame = f;
+            obj.progress = obj.lastFrame/obj.frames;
             obj.lastImage = f+obj.channels-1;
             
             S = zeros(obj.height, obj.width, obj.channels, 'uint16');
@@ -67,6 +102,7 @@ classdef ImportTiff
         end
         
         function close(obj)
+            warning('off','imageio:tiffmexutils:libtiffWarning');
             delete(obj);
         end
         
