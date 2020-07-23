@@ -1,16 +1,65 @@
 classdef ExportTiff < handle
+%%% ExportTiff
+%%%
+%%% There are two modes: single and streaming
+%%%
+%%% Single is for a single export event. It takes a stack or image. It then
+%%% starts a stream, export all the images in the stack/image, and then
+%%% closes the stream. 
+%%%
+%%% ExportTiff(Stack, Filepath, (Overwrite=false))
+%%% Stack - uint16 matrix (x, y, channels, frames)
+%%% Filepath - char-array
+%%% Overwrite - (optional) T/F flag on whether to overwrite or throw an
+%%%             error if the filepath alread exists. Default: false;
+%%%
+%%%
+%%%
+%%% Streaming is for serveral export events to one file. This is
+%%% particularly useful for when you want to use a progress bar or images
+%%% are being processed one at a time/in batches. There are three functions
+%%% 'start', 'add', and 'close'.
+%%%
+%%% exportStream = ExportTiff.start(Filepath, Height, Width, Channels, Frames, (Overwrite=false) )
+%%% Filepath - char-array
+%%% Height,Width,Channels,Frames - integer dimensions of the the final stack.
+%%% Overwrite - (optional) T/F flag on whether to overwrite or throw an
+%%%             error if the filepath alread exists. Default: false;
+%%%
+%%% exportStream.add(Stack)
+%%% Stack - uint16 matrix (x, y, channels, frames)
+%%%
+%%% Example:
+%%% exportStream = ExportTiff.start(Filepath, Height, Width, Channels, Frames, (Overwrite=false) );
+%%% exportStream.add(I1);
+%%% exportStream.add(I2);
+%%% exportStream.close;
+%%%
+%%% Listeners for progress bars can be used in streaming mode on the 'lastFrame' property.
+%%% Example:
+%%% exportStream = ExportTiff.start(Filepath, Height, Width, Channels, Frames, (Overwrite=false) );
+%%% waitBar = uiprogressdlg(f);
+%%% updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.lastFrame);
+%%% addlistener(exportStream,'lastFrame','PostSet',updateWait);
+%%% exportStream.add(S);
+%%% exportStream.close;
+%%%
+
+    properties (SetObservable) 
+        lastFrame = 0
+    end
 
     properties (Access = private)
-        lastFrame = 0
         tiffStream
         tags = struct
+        listenerObj
     end
     
     methods(Static)
-        function obj = start(filepath,height,width,channels,frames,override)
-            % Filepath, Height, Width, Channels, Frames, (Override=false)
-            if exist('override','var')
-                obj = ExportTiff(filepath,height,width,channels,frames,override);
+        function obj = start(filepath,height,width,channels,frames,overwrite)
+            % ExportTiff.start(Filepath, Height, Width, Channels, Frames, (overwrite=false) )
+            if exist('overwrite','var')
+                obj = ExportTiff(filepath,height,width,channels,frames,overwrite);
             else
                 obj = ExportTiff(filepath,height,width,channels,frames);
             end
@@ -18,9 +67,9 @@ classdef ExportTiff < handle
     end
     
     methods(Access = private)
-        function startTiffStream(obj,filepath,override,height,width,channels,frames)
+        function startTiffStream(obj,filepath,overwrite,height,width,channels,frames)
             if isfile(filepath)
-                if override
+                if overwrite
                     delete(filepath);
                 else
                     error('File Already Exists');
@@ -53,21 +102,21 @@ classdef ExportTiff < handle
     
     methods
         function obj = ExportTiff(varargin)
-            % Stack, Filepath, (Override=false)
-            % Filepath, Height, Width, Channels, Frames, (Override=false)
+            % Single Mode:    ExportTiff( Stack, Filepath, (Overwrite=false) )
+            % Streaming Mode: ExportTiff( Filepath, Height, Width, Channels, Frames, (Overwrite=false) )
             
             %% Single Export Mode
-            if nargin == 2 || nargin == 3                
+            if nargin == 2 || nargin == 3            
                 stack = varargin{1};
                 filepath = varargin{2};
-                if nargin==3, override = varargin{3}; else, override = false; end
+                if nargin==3, overwrite = varargin{3}; else, overwrite = false; end
                 
                 height = size(stack,1);
                 width = size(stack,2);
                 channels = size(stack,3);
                 frames = size(stack,4);
                 
-                startTiffStream(obj,filepath,override,...
+                startTiffStream(obj,filepath,overwrite,...
                                 height,width,channels,frames)
                 add(obj,stack);
                 delete(obj);
@@ -79,9 +128,9 @@ classdef ExportTiff < handle
                 width       = varargin{3};
                 channels    = varargin{4};
                 frames      = varargin{5};
-                if nargin==6, override = varargin{6}; else, override = false; end
+                if nargin==6, overwrite = varargin{6}; else, overwrite = false; end
                 
-                startTiffStream(obj,filepath,override,...
+                startTiffStream(obj,filepath,overwrite,...
                                 height,width,channels,frames)
             end
         end
