@@ -15,12 +15,18 @@ function setMapingVideo(h)
     h.d.fileNameLabel.Text = filepath;
     
     importStream = ImportTiff(filepath);
-    S = timeAvgStack(importStream.getStack);
+    waitBar = uiprogressdlg(h.d.f,...
+                    'Message',['Importing images from:' newline filepath],...
+                    'Title','Importing');
+    updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.progress);
+    addlistener(importStream,'progress','PostSet',updateWait);
+    I = timeAvgStack(importStream.getStack);
     importStream.close;
+    waitBar.Message = 'Displaying';
     
     %% Seperate channels
-    h.d.SL = S(:,1:256);
-    h.d.SR = S(:,257:512);
+    h.d.SL = I(:,1:256);
+    h.d.SR = I(:,257:512);
     
     %% Remove old beads if there are any
     clearBeads(h);
@@ -42,4 +48,6 @@ function setMapingVideo(h)
     h.d.RSlider.Limits(2) = 100;
     h.d.RSlider.Value     = 100;
     setMinI(h);
+    
+    waitBar.close;
 end

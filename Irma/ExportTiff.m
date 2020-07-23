@@ -76,8 +76,9 @@ classdef ExportTiff < handle
                     error('File Already Exists');
                 end
             end
-            
+                        
             obj.tiffStream = Tiff(filepath,'a');
+            obj.frames = frames;
             
             obj.tags.ImageLength = height; % image height
             obj.tags.ImageWidth = width; % image width
