@@ -1,8 +1,8 @@
-classdef SaveTiff < handle
+classdef ExportTiff < handle
 
     properties (Access = private)
         lastFrame = 0
-        tiffObj
+        tiffStream
         tags = struct
     end
     
@@ -10,9 +10,9 @@ classdef SaveTiff < handle
         function obj = start(filepath,height,width,channels,frames,override)
             % Filepath, Height, Width, Channels, Frames, (Override=false)
             if exist('override','var')
-                obj = SaveTiff(filepath,height,width,channels,frames,override);
+                obj = ExportTiff(filepath,height,width,channels,frames,override);
             else
-                obj = SaveTiff(filepath,height,width,channels,frames);
+                obj = ExportTiff(filepath,height,width,channels,frames);
             end
         end
     end
@@ -27,7 +27,7 @@ classdef SaveTiff < handle
                 end
             end
             
-            obj.tiffObj = Tiff(filepath,'a');
+            obj.tiffStream = Tiff(filepath,'a');
             
             obj.tags.ImageLength = height; % image height
             obj.tags.ImageWidth = width; % image width
@@ -52,7 +52,7 @@ classdef SaveTiff < handle
     end
     
     methods
-        function obj = SaveTiff(varargin)
+        function obj = ExportTiff(varargin)
             % Stack, Filepath, (Override=false)
             % Filepath, Height, Width, Channels, Frames, (Override=false)
             
@@ -94,10 +94,10 @@ classdef SaveTiff < handle
             for f = 1:n_frames
                 for c = 1:n_channels
                     if obj.lastFrame > 0 
-                        writeDirectory(obj.tiffObj);
+                        writeDirectory(obj.tiffStream);
                     end
-                    setTag(obj.tiffObj, obj.tags);
-                    write(obj.tiffObj, S(:,:,c,f));
+                    setTag(obj.tiffStream, obj.tags);
+                    write(obj.tiffStream, S(:,:,c,f));
                     obj.lastFrame = obj.lastFrame + 1;
                 end
             end
@@ -108,7 +108,7 @@ classdef SaveTiff < handle
         end
         
         function delete(obj)
-            obj.tiffObj.close;
+            obj.tiffStream.close;
         end
     end
 end

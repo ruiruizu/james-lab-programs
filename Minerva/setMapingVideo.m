@@ -4,6 +4,7 @@ function setMapingVideo(h)
     [file,path] = uigetfile('*.TIF; *.TIFF; *.tif; *.tiff;',...
                             'Select the mapping video',...
                             'MultiSelect','on');
+    filepath = [path,file];
     h.d.f.Visible = 'on';
     
     if isa(file,'double') && file == 0
@@ -11,8 +12,11 @@ function setMapingVideo(h)
         return;
     end
     
-    S = timeAvgStack(importVideo(h.d.f, file, path));
-    h.d.fileNameLabel.Text = [path,file];
+    h.d.fileNameLabel.Text = filepath;
+    
+    importStream = ImportTiff(filepath);
+    S = timeAvgStack(importStream.getStack);
+    importStream.close;
     
     %% Seperate channels
     h.d.SL = S(:,1:256);
@@ -31,13 +35,6 @@ function setMapingVideo(h)
     imshow(overlap,'parent',h.d.AxF);
     
     %% Set MinI Slider Limits and Values
-%     h.d.LSlider.Limits(1) = log(im2double(min(h.d.SL(:))))*100;
-%     h.d.LSlider.Limits(2) = log(im2double(max(h.d.SL(:))))*100;
-%     h.d.LSlider.Value     = h.d.LSlider.Limits(2);
-%     h.d.RSlider.Limits(1) = log(im2double(min(h.d.SR(:))))*100;
-%     h.d.RSlider.Limits(2) = log(im2double(max(h.d.SR(:))))*100;
-%     h.d.RSlider.Value     = h.d.RSlider.Limits(2);
-
     h.d.LSlider.Limits(1) = 50;
     h.d.LSlider.Limits(2) = 100;
     h.d.LSlider.Value     = 100;

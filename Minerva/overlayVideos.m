@@ -36,13 +36,12 @@ function overlayVideos(h)
         n_frames = size(imfinfo(importPath),1);
         
         % Setup import and export Tiff streams
-        importStream = Tiff(importPath, 'r');
-        exportStream = SaveTiff.start(exportPath,512,256,2,n_frames,true);
+        importStream = ImportTiff(importPath);
+        exportStream = ExportTiff.start(exportPath,512,256,2,n_frames,true);
         
         for f = 1:n_frames
             % Import
-            importStream.setDirectory(f);
-            I = importStream.read();
+            I = importStream.nextFrame();
         
             % Register
             SL = I(:,1:256);
