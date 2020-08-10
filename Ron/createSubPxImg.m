@@ -1,7 +1,7 @@
 function subPxI = createSubPxImg(center, kSize, I)
 
-    x = center(:,2);
-    y = center(:,1);
+    x = center(:,1);
+    y = center(:,2);
 
 %Non subpixel coordinates
     x1 = floor(x);

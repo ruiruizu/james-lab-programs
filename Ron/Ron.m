@@ -1,6 +1,18 @@
-function Ron
-%Just to test functions for now
-    addpath('../Irma/')
+function h = Ron(h)
+
+    
+    if ~exist('h','var')
+        addpath('../Irma/');
+        h = session;
+        h.d.f = uifigure('Position',[300 100 740 720]);
+        h.d.g = uigridlayout(h.d.f);
+    end
+
+    newTraceUI(h);
+
+    
+    
+    %% Testing
     [file,path] = uigetfile('*.TIF; *.TIFF; *.tif; *.tiff;',...
                             'Select the mapping video',...
                             'MultiSelect','on');
@@ -15,20 +27,16 @@ function Ron
                90,43;
                10,22;];
            
-    tolerance = 0.000001;
+    tolerance = 0.00001;      
            
-           
-    traces = createTrace(stack,centers,1);  
+    traces = createTrace(stack,centers,1);
     
-    test(1) = (traces(1,1,1) - 0.0673) < tolerance;
-    test(2) = (traces(3,1,2) - 0.0666) < tolerance;
-    test(3) = (traces(2,1,34) - 0.0684) < tolerance;
-    test(4) = (traces(1,1,204) - 0.0695) < tolerance;
+    test = unitTest(traces, tolerance);
     
-    if ismember(test,0)
-        disp("Test Failed");
-    else
+    if sum(test,'all') == size(test,2)
         disp("Test Passed");
+    else
+        disp("Test Failed");
     end
    
     

@@ -1,11 +1,17 @@
-function k = createKernel(sigma)
+function k = createKernel(sigma,center)
 
-    size = 2*ceil(2*sigma)+1;
+    x = floor(center(:,1));
+    y = floor(center(:,2));
     
-    baseImg =  zeros(size,size);
+    xOffset = center(:,1) - x;
+    yOffset = center(:,2) - y;
+    
+    kSize = 2*ceil(2*sigma)+1;
+    
+    baseImg =  zeros(kSize,kSize);
     particleAmp = 1;
     
-    k = gauss2d(baseImg,sigma,[ceil(size/2),ceil(size/2)],particleAmp);
+    k = gauss2d(baseImg,sigma,[ceil(kSize/2) + xOffset ,ceil(kSize/2) + yOffset],particleAmp);
 
 end
 
