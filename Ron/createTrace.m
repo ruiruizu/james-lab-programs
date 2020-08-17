@@ -6,14 +6,14 @@ function traces = createTrace(stack, centers, sigma)
     
     traces = zeros(nCenters,nChannels,nFrames);
     
-    kSize = 2*ceil(2*sigma)+1;
+    kSize = 2*ceil(2*sigma)+3;
     kRadius = floor(kSize/2);
     kStack = zeros(kSize,kSize,nCenters);
     
 %     kernel = createKernel(sigma,[1,1]);
     
     for i = 1:nCenters
-        kStack(:,:,i) = createKernel(sigma,centers(i,:));
+        kStack(:,:,i) = createKernel(sigma,centers(i,:),kSize);
     end
     
     for i = 1:nFrames

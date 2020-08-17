@@ -20,12 +20,16 @@ function setTraceVideo(h)
     updateWait = @(~,evn) waitBar.set('Value',evn.AffectedObject.progress);
     addlistener(importStream,'progress','PostSet',updateWait);
     
-    h.d.Video.stack = importStream.getStack;
+    h.d.Video.channelStack = importStream.getStack;
+    h.d.Video.stack = squeeze(h.d.Video.channelStack(:,:,str2double(h.d.Channel.Value),:));
+    h.d.Video.info.duration = size(h.d.Video.stack,3);
     
     importStream.close;
     waitBar.Message = 'Displaying';
     
     
-    
+    h.d.Video.videoPanel.frame = 1;
+    h.d.Video.videoPanel.setVideo('Video');
+    setFilterParam(h)
     waitBar.close;
 end

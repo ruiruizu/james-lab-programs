@@ -1,4 +1,4 @@
-function k = createKernel(sigma,center)
+function k = createKernel(sigma,center,kSize)
 
     x = floor(center(:,1));
     y = floor(center(:,2));
@@ -6,7 +6,6 @@ function k = createKernel(sigma,center)
     xOffset = center(:,1) - x;
     yOffset = center(:,2) - y;
     
-    kSize = 2*ceil(2*sigma)+1;
     
     baseImg =  zeros(kSize,kSize);
     particleAmp = 1;

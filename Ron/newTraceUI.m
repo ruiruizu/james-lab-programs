@@ -1,5 +1,4 @@
 function h = newTraceUI(h)
-    delete(h.d.g);
     
     
     
@@ -28,26 +27,32 @@ function h = newTraceUI(h)
     controlG.RowHeight = {20,15,40,15,40,15,40,15,40,20};
     controlG.ColumnWidth = {250};
  
-    uidropdown(controlG,'Items',{'Red','Blue','Green'},'Value','Red');
-    uilabel(controlG,'Text','Minimum Intensity');
-    h.d.ISlider = uislider(controlG,'ValueChangedFcn',@(~,~) setMinI(h),'Value',0);
+    h.d.Channel = uidropdown(controlG,'Items',{'1','2','3'},'Value','1','ValueChangedFcn',@(~,~) setChannel(h));
+    
+    uilabel(controlG,'Text','Intensity Percentile');
+    h.d.IntenSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',80,'Limits',[80 100]);
     
     uilabel(controlG,'Text','Eccentricity');
-    h.d.ESlider = uislider(controlG,'ValueChangedFcn',@(~,~) setMinI(h),'Value',0);
+    h.d.EccSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',0,'Limits',[0 1]);
     
-    uilabel(controlG,'Text','?????');
-    h.d.USlider = uislider(controlG,'ValueChangedFcn',@(~,~) setMinI(h),'Value',0);
+    uilabel(controlG,'Text','Edge Distance');
+    h.d.EdgeSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',0,'Limits',[0 10]);
     
-    uilabel(controlG,'Text','?????');
-    h.d.USlider = uislider(controlG,'ValueChangedFcn',@(~,~) setMinI(h),'Value',0);
+    uilabel(controlG,'Text','Nearest Point');
+    h.d.NearSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',0,'Limits',[0 10]);
     
     uibutton(controlG,'Text','Generate Trace','ButtonPushedFcn',@(~,~) graphTrace(h));
     
-    %Video Axes
+    %Video 
     
-    axesP = uipanel(videoSec);
-    axesG = uigridlayout(axesP);
+
     
+    videoP = uipanel(videoSec);
+    videoG = uigridlayout(videoP);
+    videoG.RowHeight = {'1x'};
+    videoG.ColumnWidth = {'1x'};
+    
+    h.d.Video.videoPanel = videoPanel('Parent', videoG,'Handles', h);
     
    
     
@@ -56,7 +61,7 @@ function h = newTraceUI(h)
     %Graph Axes
     
     graphP = uipanel(h.d.g);
-    graphG = uigridlayout(axesP);
+    graphG = uigridlayout(graphP);
     graphG.RowHeight = {'1x'};
     graphG.ColumnWidth = {'1x'};
     h.d.gAx = axes(graphP);
@@ -66,7 +71,7 @@ function h = newTraceUI(h)
     exportG = uigridlayout(exportP);
     exportG.RowHeight = {'1x'};
     exportG.ColumnWidth = {'1x','1x'};
-    uibutton(exportG,'Text','Export Current','ButtonPushedFcn',@(~,~) exportTrace(h,1));
+    uibutton(exportG,'Text','Export Current','ButtonPushedFcn',@(~,~) exportTrace(h));
     uibutton(exportG,'Text','Export All','ButtonPushedFcn',@(~,~) exportTraceFolder(h));
     
     
