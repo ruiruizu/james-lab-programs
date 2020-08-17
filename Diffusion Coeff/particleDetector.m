@@ -1,4 +1,5 @@
-function particles = particleDetector(I,p,d)
+function particles = particleDetector(I, minPeakI, distance)
+
     % Apply a 1 pixel width guassian filter to reduse noice when fitting
     J = imgaussfilt(I,1);
 
@@ -6,8 +7,7 @@ function particles = particleDetector(I,p,d)
     localM = imregionalmax(J);
     
     % Remove local maximum less than threshold parameter
-%     localM(J<minPeakI) = 0;
-    
+    localM(J<minPeakI) = 0;
         
     % If there are no canidate positions then exit
     if ~any(localM,'all')
@@ -23,11 +23,6 @@ function particles = particleDetector(I,p,d)
         [pixelY, pixelX] = ind2sub(size(localM), pixelIdx{i});
         centers(i,:) = mean([pixelX, pixelY],1);
     end
-    
-    % Removes positions with intensity lower than a certain percentile
-    prct = prctile(I(sub2ind(size(I),centers(:,2),centers(:,1))),p);
-    centers(I(sub2ind(size(I),centers(:,2),centers(:,1))) < prct,:) = [];
-    numCanidates = size(centers,1);
     
     % Find exact centers
 %     imageSizeX = size(I,2);
@@ -79,11 +74,6 @@ function particles = particleDetector(I,p,d)
     radius = 3;
     
     for i = 1:numCanidates
-        if d.CancelRequested
-            break;
-            particles = [];
-        end
-        
         centerX = centers(i,1);
         centerY = centers(i,2);
         circlePixels = (rowsInImage - centerY).^2 ...
@@ -117,6 +107,11 @@ function particles = particleDetector(I,p,d)
         particles(i,:) = [p.x, p.y];
     end
     
+    
+    
+    % Remove particles outside of distance
+    yMidline = size(I,1)/2;
+    particles(abs(particles(:,2) - yMidline) >= distance,:) = [];
 end
 
 

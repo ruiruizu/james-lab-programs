@@ -2,3 +2,11 @@
 *.DS_Store
 temp.m
 Temp.m
+*.tif
+*.Tif
+*.TIF
+*.tiff
+*.Tiff
+*.TIFF
+*.mat
+/Examples/*

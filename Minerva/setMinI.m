@@ -12,11 +12,18 @@ function setMinI(h)
         delete(h.d.RParticles);
     end
 
-    h.d.LPos = particleDetector(im2double(h.d.SL), h.d.LSlider.Value, d);
+    SL_d = im2double(h.d.SL);
+    SL_m = imregionalmax(imgaussfilt(SL_d,1));
+    SL_p = prctile(SL_d(SL_m), h.d.LSlider.Value);
+    h.d.LPos = ParticleDetector.MaxLikleyhood(SL_d, SL_p, d);
     if d.CancelRequested
         return;
     end
-    h.d.RPos = particleDetector(im2double(h.d.SR), h.d.RSlider.Value, d);
+    
+    SR_d = im2double(h.d.SR);
+    SR_m = imregionalmax(imgaussfilt(SR_d,1));
+    SR_p = prctile(SR_d(SR_m), h.d.RSlider.Value);
+    h.d.RPos = ParticleDetector.MaxLikleyhood(SR_d, SR_p, d);
     if d.CancelRequested
         return;
     end    
