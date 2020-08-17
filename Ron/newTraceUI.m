@@ -65,6 +65,7 @@ function h = newTraceUI(h)
     graphG.RowHeight = {'1x'};
     graphG.ColumnWidth = {'1x'};
     h.d.gAx = axes(graphP);
+    axtoolbar(h.d.gAx,{'zoomin','zoomout','restoreview'});
     
     %Export
     exportP = uipanel(h.d.g);
