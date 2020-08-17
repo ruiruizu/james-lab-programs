@@ -1,9 +1,4 @@
-<<<<<<< HEAD:Diffusion Coeff/particleDetector.m
-function particles = particleDetector(I, minPeakI, distance)
-
-=======
 function particles = particleDetector(I,p,e,eD,pD,d)
->>>>>>> c85f625f1b48fd88a26334d239b9ab76d8046c6d:Irma/Detection/particleDetector.m
     % Apply a 1 pixel width guassian filter to reduse noice when fitting
     J = imgaussfilt(I,1);
 
@@ -11,7 +6,8 @@ function particles = particleDetector(I,p,e,eD,pD,d)
     localM = imregionalmax(J);
     
     % Remove local maximum less than threshold parameter
-    localM(J<minPeakI) = 0;
+%     localM(J<minPeakI) = 0;
+    
         
     % If there are no canidate positions then exit
     if ~any(localM,'all')
@@ -28,8 +24,6 @@ function particles = particleDetector(I,p,e,eD,pD,d)
         centers(i,:) = mean([pixelX, pixelY],1);
     end
     
-<<<<<<< HEAD:Diffusion Coeff/particleDetector.m
-=======
     %Removes centers too close to the edge of the image
     
     centers = edgeDistFilter(I,centers,eD);
@@ -47,7 +41,6 @@ function particles = particleDetector(I,p,e,eD,pD,d)
     
     numCanidates = size(centers,1);
     
->>>>>>> c85f625f1b48fd88a26334d239b9ab76d8046c6d:Irma/Detection/particleDetector.m
     % Find exact centers
 %     imageSizeX = size(I,2);
 %     imageSizeY = size(I,1);
@@ -98,6 +91,11 @@ function particles = particleDetector(I,p,e,eD,pD,d)
     radius = 3;
     
     for i = 1:numCanidates
+        if d.CancelRequested
+            break;
+            particles = [];
+        end
+        
         centerX = centers(i,1);
         centerY = centers(i,2);
         circlePixels = (rowsInImage - centerY).^2 ...
@@ -131,13 +129,4 @@ function particles = particleDetector(I,p,e,eD,pD,d)
         particles(i,:) = [p.x, p.y];
     end
     
-    
-    
-    % Remove particles outside of distance
-    yMidline = size(I,1)/2;
-    particles(abs(particles(:,2) - yMidline) >= distance,:) = [];
 end
-
-
-
-

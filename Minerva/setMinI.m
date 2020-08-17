@@ -15,7 +15,7 @@ function setMinI(h)
     SL_d = im2double(h.d.SL);
     SL_m = imregionalmax(imgaussfilt(SL_d,1));
     SL_p = prctile(SL_d(SL_m), h.d.LSlider.Value);
-    h.d.LPos = ParticleDetector.MaxLikleyhood(SL_d, SL_p, d);
+    h.d.LPos = ParticleDetector.MaxLikleyhood(SL_d, SL_p);
     if d.CancelRequested
         return;
     end
@@ -23,7 +23,7 @@ function setMinI(h)
     SR_d = im2double(h.d.SR);
     SR_m = imregionalmax(imgaussfilt(SR_d,1));
     SR_p = prctile(SR_d(SR_m), h.d.RSlider.Value);
-    h.d.RPos = ParticleDetector.MaxLikleyhood(SR_d, SR_p, d);
+    h.d.RPos = ParticleDetector.MaxLikleyhood(SR_d, SR_p);
     if d.CancelRequested
         return;
     end    

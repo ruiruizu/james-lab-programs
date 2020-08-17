@@ -13,10 +13,7 @@ function setFilterParam(h)
     
     stack = h.d.Video.stack;
     frame = h.d.Video.videoPanel.frame;
-    h.d.Centers = particleDetector(im2double(stack(:,:,frame)), h.d.IntenSlider.Value,...
-                                                               h.d.EccSlider.Value,....
-                                                               h.d.EdgeSlider.Value,...
-                                                               h.d.NearSlider.Value, d);
+    h.d.Centers = particleDetector(im2double(stack(:,:,frame)), h.d.IntenSlider.Value, h.d.EccSlider.Value, h.d.EdgeSlider.Value, h.d.NearSlider.Value, d);
 
     if d.CancelRequested
         return;
