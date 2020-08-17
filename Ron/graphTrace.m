@@ -1,14 +1,16 @@
 function graphTrace(h)
+ 
+    if isfield(h.d,'traceGraph')
+        delete(h.d.traceGraph);
+    end
     SIGMA = 1;
-    centers = [30.2,205.3;
-               50,23;
-               90,43;
-               10,22;];
-    h.d.Trace.traceMat = createTrace(h.d.Video.stack, centers, SIGMA);
+    centers = h.d.Centers;
+           
+    h.d.Trace.traceMat = createTrace(h.d.Video.channelStack, centers, SIGMA);
     
-    channel = 1;
-    
-    plot(h.d.gAx,squeeze(h.d.Trace.traceMat(1,channel,:)));
-    
+    h.d.traceGraph = plot(h.d.gAx,squeeze(h.d.Trace.traceMat(1,:,:)));
+    h.d.Particles.PickableParts = 'Visible';
+
+    set(h.d.Particles,'ButtonDownFcn',@(~,eventData) setCenter(h,eventData));
     
 end

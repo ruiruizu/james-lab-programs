@@ -12,11 +12,12 @@ function setMinI(h)
         delete(h.d.RParticles);
     end
 
-    h.d.LPos = particleDetector(im2double(h.d.SL), h.d.LSlider.Value, d);
+    h.d.LPos = particleDetector(im2double(h.d.SL), h.d.LSlider.Value,0,0,0, d);
     if d.CancelRequested
         return;
     end
-    h.d.RPos = particleDetector(im2double(h.d.SR), h.d.RSlider.Value, d);
+    
+    h.d.RPos = particleDetector(im2double(h.d.SR), h.d.RSlider.Value,0,0,0, d);
     if d.CancelRequested
         return;
     end    

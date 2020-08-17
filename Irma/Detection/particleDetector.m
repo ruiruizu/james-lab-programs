@@ -1,4 +1,4 @@
-function particles = particleDetector(I,p,d)
+function particles = particleDetector(I,p,e,eD,pD,d)
     % Apply a 1 pixel width guassian filter to reduse noice when fitting
     J = imgaussfilt(I,1);
 
@@ -24,9 +24,21 @@ function particles = particleDetector(I,p,d)
         centers(i,:) = mean([pixelX, pixelY],1);
     end
     
+    %Removes centers too close to the edge of the image
+    
+    centers = edgeDistFilter(I,centers,eD);
+
+    
     % Removes positions with intensity lower than a certain percentile
     prct = prctile(I(sub2ind(size(I),centers(:,2),centers(:,1))),p);
     centers(I(sub2ind(size(I),centers(:,2),centers(:,1))) < prct,:) = [];
+    
+    % Removes positions with eccentricity lower than a given value
+    centers = eccentricityFilter(I,centers,e);
+    
+    % Removes positions too close with one another
+    centers = pointDistFilter(centers,pD);
+    
     numCanidates = size(centers,1);
     
     % Find exact centers
