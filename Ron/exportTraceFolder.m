@@ -11,7 +11,11 @@ function exportTraceFolder(h)
     
     for i = 1:size(traces,1)
         filename = strcat(path,'/trace_',num2str(i),'.txt');
+
         writematrix(traces(i,:,:),filename);
+
+        writematrix(squeeze(traces(i,:,:))',filename);
+
     end
     
     h.d.f.Visible = 'on';

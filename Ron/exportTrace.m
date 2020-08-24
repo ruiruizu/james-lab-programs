@@ -11,4 +11,5 @@ function exportTrace(h)
 
     filename = strcat(folder,'/trace_',num2str(h.d.centerNum),'.txt');
     writematrix(trace,filename);
+    writematrix(squeeze(trace)',filename);
 end
