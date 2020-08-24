@@ -7,10 +7,10 @@ function exportTraceFolder(h)
     
     mkdir (folder, 'Traces');
     
-    path = strcat(folder,'\','Traces');
+    path = strcat(folder,'/','Traces');
     
     for i = 1:size(traces,1)
-        filename = strcat(path,'\trace_',num2str(i),'.txt');
+        filename = strcat(path,'/trace_',num2str(i),'.txt');
         writematrix(traces(i,:,:),filename);
     end
     
