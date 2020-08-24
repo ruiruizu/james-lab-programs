@@ -9,6 +9,6 @@ function exportTrace(h)
     folder = uigetdir;
     h.d.f.Visible = 'on';
 
-    filename = strcat(folder,'\trace_',num2str(h.d.centerNum),'.txt');
-    writematrix(trace,filename);
+    filename = strcat(folder,'/trace_',num2str(h.d.centerNum),'.txt');
+    writematrix(squeeze(trace)',filename);
 end
