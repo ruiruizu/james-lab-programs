@@ -31,5 +31,11 @@ function setTraceVideo(h)
     h.d.Video.videoPanel.frame = 1;
     h.d.Video.videoPanel.setVideo('Video');
     setFilterParam(h)
+    
+    dropItems = {};
+    for i = 1:size(h.d.Video.channelStack,3)
+        dropItems{1,i} = num2str(i);
+    end
+    h.d.Channel.Items = dropItems;
     waitBar.close;
 end

@@ -24,20 +24,14 @@ function particles = particleDetector(I,p,e,eD,pD,d)
         centers(i,:) = mean([pixelX, pixelY],1);
     end
     
-    %Removes centers too close to the edge of the image
-    
-    centers = edgeDistFilter(I,centers,eD);
 
-    
     % Removes positions with intensity lower than a certain percentile
     prct = prctile(I(sub2ind(size(I),centers(:,2),centers(:,1))),p);
     centers(I(sub2ind(size(I),centers(:,2),centers(:,1))) < prct,:) = [];
     
+    
     % Removes positions with eccentricity lower than a given value
     centers = eccentricityFilter(I,centers,e);
-    
-    % Removes positions too close with one another
-    centers = pointDistFilter(centers,pD);
     
     numCanidates = size(centers,1);
     
@@ -128,5 +122,14 @@ function particles = particleDetector(I,p,e,eD,pD,d)
     
         particles(i,:) = [p.x, p.y];
     end
+    
+    % Removes positions too close with one another
+    particles = pointDistFilter(particles,pD);
+    
+    %Removes centers too close to the edge of the image
+    
+    particles = edgeDistFilter(I,particles,eD);
+    
+    
     
 end

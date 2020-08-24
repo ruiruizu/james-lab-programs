@@ -24,13 +24,13 @@ function h = newTraceUI(h)
     %Controls
     controlP = uipanel(videoSec);
     controlG = uigridlayout(controlP);
-    controlG.RowHeight = {20,15,40,15,40,15,40,15,40,20};
+    controlG.RowHeight = {20,15,40,15,40,15,40,15,40,15,20};
     controlG.ColumnWidth = {250};
  
     h.d.Channel = uidropdown(controlG,'Items',{'1','2','3'},'Value','1','ValueChangedFcn',@(~,~) setChannel(h));
     
     uilabel(controlG,'Text','Intensity Percentile');
-    h.d.IntenSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',80,'Limits',[80 100]);
+    h.d.IntenSlider = uislider(controlG,'ValueChangedFcn',@(~,eventData) setFilterParam(h,eventData),'Value',100,'Limits',[80 100]);
     
     uilabel(controlG,'Text','Eccentricity');
     h.d.EccSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',0,'Limits',[0 1]);
@@ -40,6 +40,8 @@ function h = newTraceUI(h)
     
     uilabel(controlG,'Text','Nearest Point');
     h.d.NearSlider = uislider(controlG,'ValueChangedFcn',@(~,~) setFilterParam(h),'Value',0,'Limits',[0 10]);
+    
+    h.d.cRemoved = uilabel(controlG,'Text',strcat(num2str(0),' removed centers'));
     
     uibutton(controlG,'Text','Generate Trace','ButtonPushedFcn',@(~,~) graphTrace(h));
     
@@ -62,16 +64,31 @@ function h = newTraceUI(h)
     
     graphP = uipanel(h.d.g);
     graphG = uigridlayout(graphP);
-    graphG.RowHeight = {'1x'};
+    graphG.RowHeight = {50,'1x'};
     graphG.ColumnWidth = {'1x'};
-    h.d.gAx = axes(graphP);
-    axtoolbar(h.d.gAx,{'zoomin','zoomout','restoreview'});
+    
+    %Graph Controls
+    graphControlP = uipanel(graphG);
+    graphControlG = uigridlayout(graphControlP);
+    graphControlG.RowHeight = {'1x'};
+    graphControlG.ColumnWidth = {40,'1x','1x'};
+    
+    h.d.centerTextbox = uitextarea(graphControlG,'Value','1','ValueChangedFcn',@(~,~) setCenter(h,{},str2double(h.d.centerTextbox.Value{1})));
+    
+    uibutton(graphControlG,'Text','Previous','ButtonPushedFcn',@(~,eventData) traceButtons(h,eventData));
+    uibutton(graphControlG,'Text','Next','ButtonPushedFcn',@(~,eventData) traceButtons(h,eventData));
+
+    h.d.gAx = uiaxes(graphG);
+
+
+
     
     %Export
     exportP = uipanel(h.d.g);
     exportG = uigridlayout(exportP);
     exportG.RowHeight = {'1x'};
     exportG.ColumnWidth = {'1x','1x'};
+    
     uibutton(exportG,'Text','Export Current','ButtonPushedFcn',@(~,~) exportTrace(h));
     uibutton(exportG,'Text','Export All','ButtonPushedFcn',@(~,~) exportTraceFolder(h));
     

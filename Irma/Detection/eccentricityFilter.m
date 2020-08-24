@@ -1,7 +1,8 @@
 function centers = eccentricityFilter(I,centers,e)
     numCenters = size(centers,1);
+    I = imgaussfilt(I,1);
 
-    BW = bwlabel(imbinarize(I));
+    BW = bwlabel(imbinarize(I,'adaptive'));
     eccenVals = zeros(numCenters,1);
     for i = 1:numCenters
         num = BW(centers(i,2),centers(i,1));

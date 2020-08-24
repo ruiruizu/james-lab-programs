@@ -258,7 +258,7 @@ classdef videoPanel < handle
             obj.clearGraphics;
             J = getFrame(obj,frame);
 %             obj.axes.API.replaceImage(J,'PreserveView',true);
-            imshow(J,'parent',obj.axes.axes);
+            imshow(imadjust(J),'parent',obj.axes.axes);
            
             % update frame value
             obj.frame = frame;

@@ -1,8 +1,4 @@
 function setCenter(h,eventData,idx)
-    % Have traces have not been generated
-    if ~isfield(h.d,'traceGraph')
-        return;
-    end
     
     % Find idx from UI point selection
     if ~isempty(eventData)
@@ -19,8 +15,19 @@ function setCenter(h,eventData,idx)
         [centerNum,~] = find(cA,1);
         
         h.d.centerNum = centerNum;
+        h.d.centerTextbox.Value = {num2str(centerNum)};
     else
-        h.d.centerNum = idx;
+        if idx<1
+            h.d.centerTextbox.Value = {num2str(1)};
+            h.d.centerNum = 1;
+        elseif idx > size(h.d.Centers,1)
+            h.d.centerTextbox.Value = {num2str(size(h.d.Centers,1))};
+            h.d.centerNum = size(h.d.Centers,1);
+        else
+
+            h.d.centerNum = idx;
+        end
+        
     end
     
     nFrames = size(h.d.Video.channelStack,4);

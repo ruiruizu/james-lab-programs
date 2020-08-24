@@ -4,7 +4,7 @@ function h = Ron(h)
     if ~exist('h','var')
         addpath(genpath('../Irma/'));
         h = session;
-        h.d.f = uifigure('Position',[300 100 740 720]);
+        h.d.f = uifigure('Position',[300 50 740 780]);
         h.d.g = uigridlayout(h.d.f);
     end
 
